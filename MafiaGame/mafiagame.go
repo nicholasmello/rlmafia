@@ -72,8 +72,8 @@ func (m *MafiaGame) Winner(args []string) string {
 			mafiaIs = append(mafiaIs, i)
 			votesForMafia = append(votesForMafia, 0)
 		} else {
-			for j := 0; j < 3; i++ {
-				if m.Players[i].ID == args[i] {
+			for j := 0; j < 3; j++ {
+				if m.Players[i].ID == args[j] {
 					m.Players[i].score++
 				}
 			}
@@ -189,7 +189,7 @@ func (m *MafiaGame) Clear() string {
 func (m *MafiaGame) LeaderBoard() string {
 	retVal := "Leaderboard: \n"
 	for i := 0; i < len(m.Players); i++ {
-		retVal += "<@" + m.Players[i].ID + ">: " + strconv.Itoa(m.Players[i].score) + ""
+		retVal += "<@" + m.Players[i].ID + ">: " + strconv.Itoa(m.Players[i].score) + "\n"
 	}
 	return retVal
 }
@@ -214,8 +214,14 @@ func (m *MafiaGame) Score(playerID string) string {
 }
 
 func (m *MafiaGame) Join(playerID string) string {
+	for i := 0; i < len(m.Players); i++ {
+		if m.Players[i].ID == playerID {
+			return "<@" + playerID + "> you are already in the game"
+		}
+	}
+
 	if m.InProgress == true {
-		return "<@" + playerID + "Game is in progress, please wait until after the round"
+		return "<@" + playerID + "> Game is in progress, please wait until after the round"
 	}
 	m.Players = append(m.Players, MafiaPlayer{
 		ID:     playerID,
