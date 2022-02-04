@@ -22,10 +22,11 @@ const (
 )
 
 type MafiaGame struct {
-	Guild    string
-	Prefix   string
-	Players  []MafiaPlayer
-	NumMafia int
+	Guild      string
+	Prefix     string
+	Players    []MafiaPlayer
+	NumMafia   int
+	InProgress bool
 }
 
 type MafiaPlayer struct {
@@ -100,6 +101,9 @@ func (m *MafiaGame) Score(playerID string) string {
 }
 
 func (m *MafiaGame) Join(playerID string) string {
+	if m.InProgress == true {
+		return "<@" + playerID + "Game is in progress, please wait until after the round"
+	}
 	m.Players = append(m.Players, MafiaPlayer{
 		ID:     playerID,
 		score:  0,
@@ -171,5 +175,6 @@ func New(guild string) *MafiaGame {
 		"!",
 		[]MafiaPlayer{},
 		1,
+		false,
 	}
 }
