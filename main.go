@@ -85,44 +85,86 @@ func eventHandler(s *discordgo.Session, m *discordgo.MessageCreate) {
 
 	switch command {
 	case MafiaGame.Help:
-		s.ChannelMessageSend(m.ChannelID, games[gameID].Help())
+		_, err := s.ChannelMessageSend(m.ChannelID, games[gameID].Help())
+		if err != nil {
+			fmt.Println(err)
+		}
 	case MafiaGame.SetPrefix:
 		if len(args) == 0 {
-			s.ChannelMessageSend(m.ChannelID, "```!setprefix {New Prefix}\n"+
+			_, err := s.ChannelMessageSend(m.ChannelID, "```!setprefix {New Prefix}\n"+
 				"Sets the prefix for the server to use before commands```")
+			if err != nil {
+				fmt.Println(err)
+			}
 		} else {
-			s.ChannelMessageSend(m.ChannelID, games[gameID].SetPrefix(args))
+			_, err := s.ChannelMessageSend(m.ChannelID, games[gameID].SetPrefix(args))
+			if err != nil {
+				fmt.Println(err)
+			}
 		}
 	case MafiaGame.Join:
-		s.ChannelMessageSend(m.ChannelID, games[gameID].Join(m.Author.ID))
+		_, err := s.ChannelMessageSend(m.ChannelID, games[gameID].Join(m.Author.ID))
+		if err != nil {
+			fmt.Println(err)
+		}
 	case MafiaGame.Score:
-		s.ChannelMessageSend(m.ChannelID, games[gameID].Score(m.Author.ID))
+		_, err := s.ChannelMessageSend(m.ChannelID, games[gameID].Score(m.Author.ID))
+		if err != nil {
+			fmt.Println(err)
+		}
 	case MafiaGame.NumMafia:
 		if len(args) == 0 {
-			s.ChannelMessageSend(m.ChannelID, "```!num-mafia {Number}\n"+
+			_, err := s.ChannelMessageSend(m.ChannelID, "```!num-mafia {Number}\n"+
 				"Sets the number of mafia, the game cannot be start with a higher number of mafia than number of players.\n```")
+			if err != nil {
+				fmt.Println(err)
+			}
 		} else {
-			s.ChannelMessageSend(m.ChannelID, games[gameID].SetNumMafia(args))
+			_, err := s.ChannelMessageSend(m.ChannelID, games[gameID].SetNumMafia(args))
+			if err != nil {
+				fmt.Println(err)
+			}
 		}
 	case MafiaGame.Leaderboard:
-		s.ChannelMessageSend(m.ChannelID, games[gameID].LeaderBoard())
+		_, err := s.ChannelMessageSend(m.ChannelID, games[gameID].LeaderBoard())
+		if err != nil {
+			fmt.Println(err)
+		}
 	case MafiaGame.Clear:
-		s.ChannelMessageSend(m.ChannelID, games[gameID].Clear())
+		_, err := s.ChannelMessageSend(m.ChannelID, games[gameID].Clear())
+		if err != nil {
+			fmt.Println(err)
+		}
 	case MafiaGame.Vote:
 		if len(args) == 0 {
-			s.ChannelMessageSend(m.ChannelID, "```!vote {Player}\n"+
+			_, err := s.ChannelMessageSend(m.ChannelID, "```!vote {Player}\n"+
 				"Casts a vote for a player, used at the end of the Rocket League game. Must be @mentions to work properly.\n```")
+			if err != nil {
+				fmt.Println(err)
+			}
 		} else {
-			s.ChannelMessageSend(m.ChannelID, games[gameID].Vote(m.Author.ID, args))
+			_, err := s.ChannelMessageSend(m.ChannelID, games[gameID].Vote(m.Author.ID, args))
+			if err != nil {
+				fmt.Println(err)
+			}
 		}
 	case MafiaGame.Start:
-		s.ChannelMessageSend(m.ChannelID, games[gameID].Start(s))
+		_, err := s.ChannelMessageSend(m.ChannelID, games[gameID].Start(s))
+		if err != nil {
+			fmt.Println(err)
+		}
 	case MafiaGame.Winner:
 		if len(args) < 3 {
-			s.ChannelMessageSend(m.ChannelID, "```!winner {Player} {Player} {Player}\n"+
+			_, err := s.ChannelMessageSend(m.ChannelID, "```!winner {Player} {Player} {Player}\n"+
 				"Lists the 3 players who won the rocket league game, must be @messages\n```")
+			if err != nil {
+				fmt.Println(err)
+			}
 		} else {
-			s.ChannelMessageSend(m.ChannelID, games[gameID].Winner(args))
+			_, err := s.ChannelMessageSend(m.ChannelID, games[gameID].Winner(args))
+			if err != nil {
+				fmt.Println(err)
+			}
 		}
 	}
 }
