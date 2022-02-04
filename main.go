@@ -70,10 +70,7 @@ func eventHandler(s *discordgo.Session, m *discordgo.MessageCreate) {
 		fmt.Println("New Server Registered: " + m.GuildID)
 	}
 
-	fmt.Println(m.Author.Username+m.Author.Discriminator, m.Content)
-
 	gameID := 0
-
 	for i := 0; i < len(games); i++ {
 		if games[i].Guild == m.GuildID {
 			gameID = i
@@ -90,18 +87,42 @@ func eventHandler(s *discordgo.Session, m *discordgo.MessageCreate) {
 	case MafiaGame.Help:
 		s.ChannelMessageSend(m.ChannelID, games[gameID].Help())
 	case MafiaGame.SetPrefix:
-		s.ChannelMessageSend(m.ChannelID, games[gameID].SetPrefix(args))
+		if len(args) == 0 {
+			s.ChannelMessageSend(m.ChannelID, "```!setprefix {New Prefix}\n"+
+				"Sets the prefix for the server to use before commands```")
+		} else {
+			s.ChannelMessageSend(m.ChannelID, games[gameID].SetPrefix(args))
+		}
 	case MafiaGame.Join:
 		s.ChannelMessageSend(m.ChannelID, games[gameID].Join(m.Author.ID))
 	case MafiaGame.Score:
 		s.ChannelMessageSend(m.ChannelID, games[gameID].Score(m.Author.ID))
 	case MafiaGame.NumMafia:
-		s.ChannelMessageSend(m.ChannelID, games[gameID].SetNumMafia(args))
+		if len(args) == 0 {
+			s.ChannelMessageSend(m.ChannelID, "```!num-mafia {Number}\n"+
+				"Sets the number of mafia, the game cannot be start with a higher number of mafia than number of players.\n```")
+		} else {
+			s.ChannelMessageSend(m.ChannelID, games[gameID].SetNumMafia(args))
+		}
 	case MafiaGame.Leaderboard:
 		s.ChannelMessageSend(m.ChannelID, games[gameID].LeaderBoard())
 	case MafiaGame.Clear:
 		s.ChannelMessageSend(m.ChannelID, games[gameID].Clear())
 	case MafiaGame.Vote:
-		s.ChannelMessageSend(m.ChannelID, games[gameID].Vote(m.Author.ID, args))
+		if len(args) == 0 {
+			s.ChannelMessageSend(m.ChannelID, "```!vote {Player}\n"+
+				"Casts a vote for a player, used at the end of the Rocket League game. Must be @mentions to work properly.\n```")
+		} else {
+			s.ChannelMessageSend(m.ChannelID, games[gameID].Vote(m.Author.ID, args))
+		}
+	case MafiaGame.Start:
+		s.ChannelMessageSend(m.ChannelID, games[gameID].Start(s))
+	case MafiaGame.Winner:
+		if len(args) < 3 {
+			s.ChannelMessageSend(m.ChannelID, "```!winner {Player} {Player} {Player}\n"+
+				"Lists the 3 players who won the rocket league game, must be @messages\n```")
+		} else {
+			s.ChannelMessageSend(m.ChannelID, games[gameID].Winner(args))
+		}
 	}
 }

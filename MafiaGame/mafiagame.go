@@ -1,21 +1,25 @@
 package MafiaGame
 
 import (
+	"fmt"
+	"github.com/bwmarrin/discordgo"
+	"math/rand"
 	"strconv"
 	"strings"
+	"time"
 )
 
 type Command int
 
 const (
-	Clear  Command = iota
-	Winner         //TODO
+	Clear Command = iota
+	Winner
 	Score
 	Leaderboard
 	Join
 	Vote
 	NumMafia
-	Start //TODO
+	Start
 	Help
 	SetPrefix
 	err
@@ -37,8 +41,117 @@ type MafiaPlayer struct {
 	vote   string
 }
 
+func (m *MafiaGame) Winner(args []string) string {
+	if !m.InProgress {
+		return "Game has not started, !start"
+	}
+
+	for i := 0; i < len(m.Players); i++ {
+		if m.Players[i].vote == "" {
+			return "Not everyone has voted"
+		}
+	}
+
+	for i := 0; i < 3; i++ {
+		args[i] = args[i][3:21]
+		contains := false
+		for j := 0; j < len(m.Players); j++ {
+			if args[i] == m.Players[j].ID {
+				contains = true
+			}
+		}
+		if contains == false {
+			return "<@" + args[i] + "> is not in the game"
+		}
+	}
+
+	var mafiaIs []int
+	var votesForMafia []int
+	for i := 0; i < len(m.Players); i++ {
+		if m.Players[i].mafia {
+			mafiaIs = append(mafiaIs, i)
+			votesForMafia = append(votesForMafia, 0)
+		} else {
+			for j := 0; j < 3; i++ {
+				if m.Players[i].ID == args[i] {
+					m.Players[i].score++
+				}
+			}
+		}
+	}
+
+	for i := 0; i < len(m.Players); i++ {
+		for j := 0; j < m.NumMafia; j++ {
+			if m.Players[i].vote == m.Players[mafiaIs[j]].ID {
+				m.Players[i].score++
+				votesForMafia[j]++
+			}
+		}
+	}
+
+	for i := 0; i < len(mafiaIs); i++ {
+		if votesForMafia[i] < 3 {
+			m.Players[i].score += 3
+		}
+	}
+
+	for i := 0; i < len(m.Players); i++ {
+		m.Players[i].vote = ""
+		m.Players[i].mafia = false
+	}
+	m.InProgress = false
+
+	return m.LeaderBoard()
+}
+
+func (m *MafiaGame) Start(s *discordgo.Session) string {
+	if len(m.Players) < m.NumMafia {
+		return "Too many mafia, add more players or reduce the number of mafia"
+	} else if len(m.Players) == 0 {
+		return "Nobody is in the game, type !join to play"
+	} else if m.InProgress {
+		return "The game is already started"
+	}
+
+	for i := 0; i < m.NumMafia; i++ {
+		for {
+			rand.Seed(time.Now().UnixNano())
+			randomnum := rand.Intn(len(m.Players))
+			if !m.Players[randomnum].mafia {
+				m.Players[randomnum].mafia = true
+				break
+			}
+		}
+	}
+
+	for i := 0; i < len(m.Players); i++ {
+		channel, err := s.UserChannelCreate(m.Players[i].ID)
+		if err != nil {
+			fmt.Println("error creating channel: ", err)
+		}
+		if m.Players[i].mafia {
+			_, err = s.ChannelMessageSend(channel.ID, "You are mafia")
+			if err != nil {
+				fmt.Println("error sending DM message: ", err)
+			}
+		} else {
+			_, err = s.ChannelMessageSend(channel.ID, "You are innocent")
+			if err != nil {
+				fmt.Println("error sending DM message: ", err)
+			}
+		}
+	}
+
+	m.InProgress = true
+	return "Players may join their team, after the game is completed !vote"
+}
+
 func (m *MafiaGame) Vote(playerID string, args []string) string {
-	opp := args[0]
+	opp := args[0][3:21]
+
+	if !m.InProgress {
+		return "Game has not started, !start"
+	}
 
 	// Find self in list given ID
 	playerI := -1
