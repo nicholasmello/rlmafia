@@ -186,6 +186,7 @@ func (m *MafiaGame) Clear() string {
 	finalLeaderboard := m.LeaderBoard()
 	m.Players = []MafiaPlayer{}
 	m.NumMafia = 1
+	m.InProgress = false
 	return "Game has been cleared\n" + finalLeaderboard
 }
 
