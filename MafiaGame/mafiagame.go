@@ -147,8 +147,6 @@ func (m *MafiaGame) Start(s *discordgo.Session) string {
 }
 
 func (m *MafiaGame) Vote(playerID string, args []string) string {
-	opp := args[0][3:21]
-
 	if !m.InProgress {
 		return "Game has not started, !start"
 	}
@@ -163,6 +161,11 @@ func (m *MafiaGame) Vote(playerID string, args []string) string {
 	if playerI == -1 {
 		return "<@" + playerID + ">, you must be in the game to vote"
 	}
+
+	if len(args[0]) != 22 {
+		return "Invalid player"
+	}
+	opp := args[0][3:21]
 
 	// Find opponent in list given ID
 	oppI := -1
