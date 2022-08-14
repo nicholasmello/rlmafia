@@ -1,5 +1,5 @@
 # Rocket League Mafia Bot
-A rocket league mafia discord bot written with discord.js
+A rocket league mafia discord bot written in Go
 ## Explination
 Rocket League Mafia is a game where some players are designated 'mafia' while others are 'innocent'. Innocent players play to win the game of rocket league while looking out for the mafia, who are trying to lose on purpose. Points are awarded based on how well you do, 3 points are given to a mafia who is successfully able to lose the game without getting detected (3/5 of the innocent votes). 1 point is also awarded to ever innocent player who guesses the correct mafia as well as 1 point for each winning innocent player (to incentivize playing the game correctly).
 ### Note to players
