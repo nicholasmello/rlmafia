@@ -53,7 +53,7 @@ func (m *MafiaGame) Winner(args []string) string {
 	}
 
 	for i := 0; i < 3; i++ {
-		args[i] = args[i][3:21]
+		args[i] = args[i][2:20]
 		contains := false
 		for j := 0; j < len(m.Players); j++ {
 			if args[i] == m.Players[j].ID {
@@ -162,10 +162,11 @@ func (m *MafiaGame) Vote(playerID string, args []string) string {
 		return "<@" + playerID + ">, you must be in the game to vote"
 	}
 
-	if len(args[0]) != 22 {
+	if len(args[0]) != 21 {
+		fmt.Printf("%s\n", args[0])
 		return "Invalid player"
 	}
-	opp := args[0][3:21]
+	opp := args[0][2:20]
 
 	// Find opponent in list given ID
 	oppI := -1

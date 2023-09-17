@@ -31,7 +31,7 @@ func main() {
 
 	bot.AddHandler(eventHandler)
 
-	bot.Identify.Intents = discordgo.IntentsGuildMessages
+	bot.Identify.Intents |= discordgo.IntentsGuildMessages
 
 	// Open a websocket connection to Discord and begin listening
 	err = bot.Open()
